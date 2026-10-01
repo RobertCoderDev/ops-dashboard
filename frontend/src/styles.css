@@ -1,0 +1,257 @@
+body {
+  background-color: #f4f6f9;
+  overflow-x: hidden; /* red de seguridad: nunca scroll horizontal de toda la página */
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.card-kpi {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.card-kpi .kpi-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.badge-aprobado {
+  background-color: #198754;
+}
+.badge-repetir {
+  background-color: #dc3545;
+}
+.badge-pendiente {
+  background-color: #6c757d;
+}
+
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0d6efd 0%, #084298 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar {
+  min-height: calc(100vh - 56px);
+  background-color: #ffffff;
+  border-right: 1px solid #e9ecef;
+}
+
+.sidebar .nav-link {
+  color: #495057;
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar .nav-link.active {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.app-navbar {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-navbar .navbar-brand {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: start;
+}
+
+.content-area {
+  min-width: 0; 
+  padding: 1.5rem;
+}
+
+@media (max-width: 767.98px) {
+  .layout-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .sidebar .nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sidebar .nav-item {
+    flex: 0 0 auto;
+  }
+
+  .sidebar .nav-link {
+    white-space: nowrap;
+    margin-bottom: 0;
+  }
+
+  .content-area {
+    padding: 1rem;
+  }
+
+  .card-kpi .kpi-value {
+    font-size: 1.75rem;
+  }
+}
+
+.tabs-scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-scroll .nav-link {
+  white-space: nowrap;
+}
+
+.fila-captura {
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+}
+
+.table-responsive-card .table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive-card {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  padding: 1rem;
+}
+
+.app-navbar {
+  min-height: 58px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+.app-navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.app-navbar .usuario-nombre {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 0.88rem;
+}
+.app-navbar .btn {
+  border-radius: 0.45rem;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #e9ecef;
+  gap: 0.35rem;
+  align-items: flex-end;
+}
+.nav-tabs .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #6c757d;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.6rem 1.15rem;
+  font-weight: 500;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.nav-tabs .nav-link:hover {
+  color: #0d6efd;
+  background: #fff;
+}
+.nav-tabs .nav-link.active {
+  color: #212529;
+  background: #fff;
+  border-color: #e9ecef #e9ecef #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+.card,
+.table-responsive-card,
+.card-kpi {
+  border-radius: 0.875rem;
+}
+.table-responsive-card {
+  padding: 1.5rem;
+}
+.table-responsive-card > h5,
+.table-responsive-card > h6 {
+  font-weight: 700;
+}
+
+.table-responsive-card .table > :not(caption) > * > * {
+  padding: 0.8rem 0.65rem;
+  vertical-align: middle;
+}
+.table thead th {
+  font-weight: 700;
+  color: #343a40;
+  border-bottom-width: 2px;
+  white-space: nowrap;
+}
+.table tbody tr {
+  border-color: #eef1f4;
+}
+.table-hover > tbody > tr:hover > * {
+  background-color: #f6f8fb;
+}
+
+.table-light,
+.table > .table-light {
+  --bs-table-accent-bg: #f6f8fb;
+  background-color: #f6f8fb;
+}
+
+.badge {
+  border-radius: 0.4rem;
+  padding: 0.45em 0.85em;
+  font-size: 0.74em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.btn {
+  border-radius: 0.45rem;
+}
+.form-control,
+.form-select {
+  border-radius: 0.45rem;
+}
+
+.content-area h3 {
+  font-weight: 700;
+}
+
