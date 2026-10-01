@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const dbPath = path.join(__dirname, '..', 'db.json');
+const { DB_PATH } = require('../db');
+const dbPath = DB_PATH;
 
 if (fs.existsSync(dbPath)) {
   const { crearRespaldo } = require('./backups');

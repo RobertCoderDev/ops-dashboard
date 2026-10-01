@@ -20,7 +20,8 @@ app.use(crearCors());
 app.use(express.json({ limit: '1mb' }));
 app.use(rateLimit({ ventanaMs: 60_000, max: 600 }));
 
-const dbPath = path.join(__dirname, 'db.json');
+const { DB_PATH } = require('./db');
+const dbPath = DB_PATH;
 if (!fs.existsSync(dbPath)) {
   console.log('No se encontró db.json, generando datos de ejemplo...');
   require('./utils/startDb');
