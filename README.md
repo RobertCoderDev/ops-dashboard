@@ -10,9 +10,9 @@ Herramienta interna para el equipo de Operaciones de Ozaru. Permite cargar repor
 
 ## Credenciales por Defecto (Capturista)
 
-- **Nombre:** `Admin`
-- **Contraseña:** `admin123`
-*(Los usuarios de consulta normal ingresan únicamente con su número de empleado).*
+El sistema ahora lee las credenciales del primer usuario administrador desde las **Variables de Entorno** al generar la base de datos por primera vez. Esto evita contraseñas "quemadas" (hardcoded) en el código.
+
+*(Los usuarios de consulta normal ingresan únicamente con su número de empleado, el cual se genera automáticamente al importar el Excel).*
 
 ## Despliegue en EasyPanel (VPS)
 
@@ -23,6 +23,8 @@ El proyecto está configurado para desplegarse mediante Docker, sirviendo tanto 
    - `NODE_ENV=production`
    - `PORT=4000`
    - `JWT_SECRET=tu_secreto_aqui_generado_aleatoriamente`
+   - `INITIAL_ADMIN_USER=Admin` *(Opcional: Nombre del usuario operador)*
+   - `INITIAL_ADMIN_PASSWORD=OzaruOps2026!` *(Opcional: Contraseña inicial segura)*
 3. En la pestaña **Volumes**, agrega un volumen persistente:
    - **Mount path (Ruta en contenedor):** `/app/data`
    *(Esto asegura que la base de datos sobreviva a los reinicios).*
