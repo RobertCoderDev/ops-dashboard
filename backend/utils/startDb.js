@@ -16,8 +16,8 @@ const db = {
   users: [
     {
       id: 1,
-      password: bcrypt.hashSync('admin123', salt),
-      nombre: 'Admin',
+      password: bcrypt.hashSync(process.env.INITIAL_ADMIN_PASSWORD || 'OzaruOps2026!', salt),
+      nombre: process.env.INITIAL_ADMIN_USER || 'Admin',
       uen: '-',
       sitio: '-',
       role: 'capturista',
@@ -31,4 +31,4 @@ const db = {
 };
 
 require('../db').writeDB(db); 
-console.log(' db iniciado. Inicia sesión con el nombre "Admin" y contraseña "admin123".');
+console.log(' db iniciado. Inicia sesión con tus credenciales configuradas.');
