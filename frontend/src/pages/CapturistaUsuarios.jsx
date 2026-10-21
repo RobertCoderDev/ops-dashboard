@@ -6,6 +6,7 @@ const VACIO = { password: '', nombre: '', uen: '', sitio: '', role: 'usuario', e
 export default function CapturistaUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [form, setForm] = useState(VACIO);
+  const [editandoId, setEditandoId] = useState(null);
   const [error, setError] = useState('');
   const [ok, setOk] = useState('');
   const [cargando, setCargando] = useState(true);
@@ -35,21 +36,53 @@ export default function CapturistaUsuarios() {
     setForm(siguiente);
   }
 
+  function handleEditar(u) {
+    setError('');
+    setOk('');
+    setEditandoId(u.id);
+    setForm({
+      password: '',
+      nombre: u.nombre || '',
+      uen: u.uen === '-' ? '' : (u.uen || ''),
+      sitio: u.sitio === '-' ? '' : (u.sitio || ''),
+      role: u.role || 'usuario',
+      employeeId: u.employeeId || '',
+    });
+  }
+
+  function handleCancelar() {
+    setEditandoId(null);
+    setForm(VACIO);
+    setError('');
+    setOk('');
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
     setOk('');
     try {
-      const { data } = await api.post('/users', form);
-      setOk(
-        data.avisoNombreDuplicado
-          ? `Usuario "${form.nombre}" creado. Aviso: ya había otra persona con ese nombre (no afecta el login).`
-          : `Usuario "${form.nombre}" creado correctamente.`
-      );
-      setForm(VACIO);
+      if (editandoId) {
+        const { data } = await api.put(`/users/${editandoId}`, form);
+        setOk(
+          data.avisoNombreDuplicado
+            ? `Usuario "${form.nombre}" actualizado. Aviso: ya había otra persona con ese nombre.`
+            : `Usuario "${form.nombre}" actualizado correctamente.`
+        );
+        setEditandoId(null);
+        setForm(VACIO);
+      } else {
+        const { data } = await api.post('/users', form);
+        setOk(
+          data.avisoNombreDuplicado
+            ? `Usuario "${form.nombre}" creado. Aviso: ya había otra persona con ese nombre (no afecta el login).`
+            : `Usuario "${form.nombre}" creado correctamente.`
+        );
+        setForm(VACIO);
+      }
       cargar();
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al crear el usuario');
+      setError(err.response?.data?.error || (editandoId ? 'Error al actualizar el usuario' : 'Error al crear el usuario'));
     }
   }
 
@@ -60,6 +93,10 @@ export default function CapturistaUsuarios() {
     try {
       await api.delete(`/users/${u.id}`);
       setOk(`Usuario "${u.nombre}" eliminado.`);
+      if (editandoId === u.id) {
+        setEditandoId(null);
+        setForm(VACIO);
+      }
       cargar();
     } catch (err) {
       setError(err.response?.data?.error || 'Error al eliminar el usuario');
@@ -81,9 +118,22 @@ export default function CapturistaUsuarios() {
       <div className="row">
         <div className="col-lg-4 mb-4">
           <div className="table-responsive-card">
-            <h5 className="mb-3">Agregar usuario</h5>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="mb-0">{editandoId ? 'Editar usuario' : 'Agregar usuario'}</h5>
+              {editandoId && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-secondary py-0"
+                  onClick={handleCancelar}
+                >
+                  ✕ Cancelar
+                </button>
+              )}
+            </div>
+
             {error && <div className="alert alert-danger py-2">{error}</div>}
             {ok && <div className="alert alert-success py-2">{ok}</div>}
+
             <form onSubmit={handleSubmit}>
               <div className="mb-2">
                 <label className="form-label small mb-1">Rol</label>
@@ -112,8 +162,21 @@ export default function CapturistaUsuarios() {
                 </div>
               ) : (
                 <div className="mb-2">
-                  <label className="form-label small mb-1">Contraseña</label>
-                  <input type="password" className="form-control form-control-sm" name="password" value={form.password} onChange={handleChange} required />
+                  <label className="form-label small mb-1">
+                    {editandoId ? 'Nueva contraseña (opcional)' : 'Contraseña'}
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control form-control-sm"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder={editandoId ? 'Dejar en blanco para no cambiar' : ''}
+                    required={!editandoId}
+                  />
+                  {editandoId && (
+                    <div className="form-text">Dejar en blanco para mantener la contraseña actual.</div>
+                  )}
                 </div>
               )}
 
@@ -125,7 +188,17 @@ export default function CapturistaUsuarios() {
                 <label className="form-label small mb-1">Sitio</label>
                 <input className="form-control form-control-sm" name="sitio" value={form.sitio} onChange={handleChange} placeholder="ej. CDMX" />
               </div>
-              <button className="btn btn-primary btn-sm w-100">Agregar usuario</button>
+
+              <div className="d-flex gap-2">
+                <button className="btn btn-primary btn-sm flex-grow-1">
+                  {editandoId ? 'Guardar cambios' : 'Agregar usuario'}
+                </button>
+                {editandoId && (
+                  <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleCancelar}>
+                    Cancelar
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>
@@ -154,13 +227,13 @@ export default function CapturistaUsuarios() {
                       <th>UEN</th>
                       <th>Sitio</th>
                       <th>Rol</th>
-                      <th></th>
+                      <th className="text-end">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
                     {usuariosFiltrados.map((u) => (
-                      <tr key={u.id}>
-                        <td>{u.nombre}</td>
+                      <tr key={u.id} className={editandoId === u.id ? 'table-primary' : ''}>
+                        <td className="fw-medium">{u.nombre}</td>
                         <td>
                           {u.role === 'capturista'
                             ? <span className="text-muted small">nombre + contraseña</span>
@@ -173,8 +246,19 @@ export default function CapturistaUsuarios() {
                             {u.role}
                           </span>
                         </td>
-                        <td className="text-end">
-                          <button className="btn btn-outline-danger btn-sm" onClick={() => handleEliminar(u)}>
+                        <td className="text-end text-nowrap">
+                          <button
+                            className="btn btn-outline-primary btn-sm me-2"
+                            onClick={() => handleEditar(u)}
+                            title="Editar usuario"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => handleEliminar(u)}
+                            title="Eliminar usuario"
+                          >
                             Eliminar
                           </button>
                         </td>
