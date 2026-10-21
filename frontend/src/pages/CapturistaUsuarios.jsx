@@ -109,47 +109,55 @@ export default function CapturistaUsuarios() {
 
   return (
     <div>
-      <h3 className="mb-4">Gestión de usuarios</h3>
-      <p className="small text-muted">
-        Los <strong>usuarios</strong> entran al sistema solo con su <strong>número de empleado</strong> (sin
-        contraseña). Los <strong>capturistas</strong> entran con nombre + contraseña.
-      </p>
+      <div className="mb-3">
+        <h3 className="mb-1">Gestión de usuarios</h3>
+        <p className="small text-muted mb-0">
+          Los <strong>usuarios</strong> acceden con su número de empleado. Los <strong>capturistas</strong> con usuario y contraseña.
+        </p>
+      </div>
 
-      <div className="row">
-        <div className="col-lg-4 mb-4">
+      <div className="row g-3">
+        {/* Formulario Lateral */}
+        <div className="col-xxl-3 col-xl-4 col-lg-4">
           <div className="table-responsive-card">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0">{editandoId ? 'Editar usuario' : 'Agregar usuario'}</h5>
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h5 className="mb-0 fs-6 fw-bold">
+                {editandoId ? 'Editar usuario' : 'Agregar usuario'}
+              </h5>
               {editandoId && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary py-0"
-                  onClick={handleCancelar}
-                >
-                  ✕ Cancelar
-                </button>
+                <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                  ID #{editandoId}
+                </span>
               )}
             </div>
 
-            {error && <div className="alert alert-danger py-2">{error}</div>}
-            {ok && <div className="alert alert-success py-2">{ok}</div>}
+            {error && <div className="alert alert-danger py-2 small">{error}</div>}
+            {ok && <div className="alert alert-success py-2 small">{ok}</div>}
 
             <form onSubmit={handleSubmit}>
               <div className="mb-2">
-                <label className="form-label small mb-1">Rol</label>
+                <label className="form-label small mb-1 text-secondary fw-semibold">Rol</label>
                 <select className="form-select form-select-sm" name="role" value={form.role} onChange={handleChange}>
                   <option value="usuario">Usuario</option>
                   <option value="capturista">Capturista</option>
                 </select>
               </div>
+
               <div className="mb-2">
-                <label className="form-label small mb-1">Nombre completo</label>
-                <input className="form-control form-control-sm" name="nombre" value={form.nombre} onChange={handleChange} required />
+                <label className="form-label small mb-1 text-secondary fw-semibold">Nombre completo</label>
+                <input
+                  className="form-control form-control-sm"
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                  placeholder="Nombre y apellidos"
+                  required
+                />
               </div>
 
               {form.role === 'usuario' ? (
                 <div className="mb-2">
-                  <label className="form-label small mb-1">Número de empleado</label>
+                  <label className="form-label small mb-1 text-secondary fw-semibold">Número de empleado</label>
                   <input
                     className="form-control form-control-sm"
                     name="employeeId"
@@ -158,11 +166,11 @@ export default function CapturistaUsuarios() {
                     placeholder="ej. 10456"
                     required
                   />
-                  <div className="form-text">Es lo único que esta persona necesita para iniciar sesión.</div>
+                  <div className="form-text" style={{ fontSize: '0.72rem' }}>Identificador para iniciar sesión.</div>
                 </div>
               ) : (
                 <div className="mb-2">
-                  <label className="form-label small mb-1">
+                  <label className="form-label small mb-1 text-secondary fw-semibold">
                     {editandoId ? 'Nueva contraseña (opcional)' : 'Contraseña'}
                   </label>
                   <input
@@ -171,30 +179,31 @@ export default function CapturistaUsuarios() {
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    placeholder={editandoId ? 'Dejar en blanco para no cambiar' : ''}
+                    placeholder={editandoId ? 'En blanco = mantener actual' : 'Mínimo 6 caracteres'}
                     required={!editandoId}
                   />
                   {editandoId && (
-                    <div className="form-text">Dejar en blanco para mantener la contraseña actual.</div>
+                    <div className="form-text" style={{ fontSize: '0.72rem' }}>Deja en blanco para conservar la actual.</div>
                   )}
                 </div>
               )}
 
               <div className="mb-2">
-                <label className="form-label small mb-1">UEN</label>
+                <label className="form-label small mb-1 text-secondary fw-semibold">UEN</label>
                 <input className="form-control form-control-sm" name="uen" value={form.uen} onChange={handleChange} placeholder="ej. Comercial" />
               </div>
+
               <div className="mb-3">
-                <label className="form-label small mb-1">Sitio</label>
+                <label className="form-label small mb-1 text-secondary fw-semibold">Sitio</label>
                 <input className="form-control form-control-sm" name="sitio" value={form.sitio} onChange={handleChange} placeholder="ej. CDMX" />
               </div>
 
-              <div className="d-flex gap-2">
+              <div className="d-flex gap-2 pt-1">
                 <button className="btn btn-primary btn-sm flex-grow-1">
                   {editandoId ? 'Guardar cambios' : 'Agregar usuario'}
                 </button>
                 {editandoId && (
-                  <button type="button" className="btn btn-outline-secondary btn-sm" onClick={handleCancelar}>
+                  <button type="button" className="btn btn-outline-secondary btn-sm px-3" onClick={handleCancelar}>
                     Cancelar
                   </button>
                 )}
@@ -203,67 +212,88 @@ export default function CapturistaUsuarios() {
           </div>
         </div>
 
-        <div className="col-lg-8">
+        {/* Tabla de Usuarios */}
+        <div className="col-xxl-9 col-xl-8 col-lg-8">
           <div className="table-responsive-card">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0">Listado de usuarios ({usuariosFiltrados.length})</h5>
+            <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <h5 className="mb-0 fs-6 fw-bold">
+                Usuarios <span className="badge bg-light text-dark border ms-1">{usuariosFiltrados.length}</span>
+              </h5>
               <input
-                className="form-control form-control-sm w-auto"
-                placeholder="Buscar..."
+                className="form-control form-control-sm"
+                style={{ width: '100%', maxWidth: '240px' }}
+                placeholder="Buscar por nombre, ID..."
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
               />
             </div>
 
             {cargando ? (
-              <p className="text-muted">Cargando...</p>
+              <p className="text-muted py-3">Cargando...</p>
             ) : (
               <div className="table-responsive">
-                <table className="table table-sm table-hover align-middle">
-                  <thead>
+                <table className="table table-sm table-hover align-middle mb-0">
+                  <thead className="table-light">
                     <tr>
-                      <th>Nombre</th>
-                      <th>Acceso</th>
-                      <th>UEN</th>
-                      <th>Sitio</th>
-                      <th>Rol</th>
-                      <th className="text-end">Acciones</th>
+                      <th style={{ width: '32%' }}>Nombre</th>
+                      <th style={{ width: '14%' }}>Acceso</th>
+                      <th style={{ width: '14%' }}>UEN</th>
+                      <th style={{ width: '14%' }}>Sitio</th>
+                      <th style={{ width: '10%' }}>Rol</th>
+                      <th className="text-end" style={{ width: '16%' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {usuariosFiltrados.map((u) => (
-                      <tr key={u.id} className={editandoId === u.id ? 'table-primary' : ''}>
-                        <td className="fw-medium">{u.nombre}</td>
-                        <td>
-                          {u.role === 'capturista'
-                            ? <span className="text-muted small">nombre + contraseña</span>
-                            : (u.employeeId || <span className="text-danger small">sin ID (no puede entrar)</span>)}
-                        </td>
-                        <td>{u.uen}</td>
-                        <td>{u.sitio}</td>
-                        <td>
-                          <span className={`badge ${u.role === 'capturista' ? 'bg-info text-dark' : 'bg-secondary'}`}>
-                            {u.role}
-                          </span>
-                        </td>
-                        <td className="text-end text-nowrap">
-                          <button
-                            className="btn btn-outline-primary btn-sm me-2"
-                            onClick={() => handleEditar(u)}
-                            title="Editar usuario"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => handleEliminar(u)}
-                            title="Eliminar usuario"
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {usuariosFiltrados.map((u) => {
+                      const esSeleccionado = editandoId === u.id;
+                      return (
+                        <tr
+                          key={u.id}
+                          className={esSeleccionado ? 'table-active' : ''}
+                          style={esSeleccionado ? { backgroundColor: '#eef4ff' } : {}}
+                        >
+                          <td className="fw-medium text-dark py-2 align-middle">
+                            {u.nombre}
+                          </td>
+                          <td className="py-2 align-middle">
+                            {u.role === 'capturista' ? (
+                              <span className="badge bg-light text-secondary border">clave</span>
+                            ) : (
+                              u.employeeId ? (
+                                <code className="text-primary fw-semibold">{u.employeeId}</code>
+                              ) : (
+                                <span className="text-danger small">sin ID</span>
+                              )
+                            )}
+                          </td>
+                          <td className="py-2 text-muted small align-middle">{u.uen}</td>
+                          <td className="py-2 text-muted small align-middle">{u.sitio}</td>
+                          <td className="py-2 align-middle">
+                            <span className={`badge ${u.role === 'capturista' ? 'bg-info text-dark' : 'bg-secondary'}`}>
+                              {u.role}
+                            </span>
+                          </td>
+                          <td className="text-end text-nowrap py-2 align-middle">
+                            <div className="d-inline-flex gap-1 justify-content-end">
+                              <button
+                                className={`btn btn-sm py-0 px-2 ${esSeleccionado ? 'btn-primary' : 'btn-outline-primary'}`}
+                                onClick={() => handleEditar(u)}
+                                title="Editar usuario"
+                              >
+                                Editar
+                              </button>
+                              <button
+                                className="btn btn-outline-danger btn-sm py-0 px-2"
+                                onClick={() => handleEliminar(u)}
+                                title="Eliminar usuario"
+                              >
+                                Eliminar
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

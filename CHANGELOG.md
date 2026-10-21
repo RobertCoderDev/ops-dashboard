@@ -10,6 +10,8 @@
 - **Frontend (`frontend/src/pages/CapturistaUsuarios.jsx`)**:
   - Añadido botón "Editar" en la columna de acciones del listado de usuarios.
   - Formulario lateral reactivo: conmuta entre modo creación ("Agregar usuario") y modo edición ("Editar usuario"), pre-cargando los datos del usuario seleccionado.
-  - Resaltado visual (`table-primary`) de la fila que está siendo editada en tiempo real.
-  - Opción de cancelación rápida de edición para restaurar el formulario a su estado inicial.
-  - Manejo adaptativo del campo de contraseña para capturistas en edición (opcional, con placeholder explicativo).
+  - Pulido visual estricto de UI/CSS:
+    - Distribución de columnas optimizada (`32% Nombre`, `14% Acceso`, `14% UEN`, `14% Sitio`, `10% Rol`, `16% Acciones`) con `align-middle` para evitar desalineaciones verticales ante nombres largos.
+    - Botones de acción compactos (`d-inline-flex gap-1`) con jerarquía visual clara.
+    - Botones del formulario ("Guardar cambios" y "Cancelar") alineados en flex horizontal sin saltos de línea antiestéticos.
+    - Resaltado suave y profesional de la fila en edición (`#eef4ff`) con badge contextual en el encabezado del formulario.
