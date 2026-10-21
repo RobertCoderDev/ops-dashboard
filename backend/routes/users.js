@@ -87,6 +87,88 @@ router.post('/', requireAuth, requireCapturista, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+router.put('/:id', requireAuth, requireCapturista, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) return res.status(400).json({ error: 'ID inválido' });
+
+    const body = req.body || {};
+    const password = typeof body.password === 'string' ? body.password : '';
+    const nombre = texto(body.nombre);
+    const uen = texto(body.uen);
+    const sitio = texto(body.sitio);
+    const role = texto(body.role);
+    const employeeId = texto(body.employeeId);
+    const whatsapp = texto(body.whatsapp);
+    const canal = texto(body.canal);
+
+    if (!nombre) return res.status(400).json({ error: 'El nombre es requerido' });
+    if (!['usuario', 'capturista'].includes(role)) {
+      return res.status(400).json({ error: 'role debe ser "usuario" o "capturista"' });
+    }
+    if (role === 'usuario' && !employeeId) {
+      return res.status(400).json({
+        error: 'El número de empleado es requerido: es lo único que usan los usuarios para entrar',
+      });
+    }
+    if (role === 'capturista' && password && password.length < 6) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+    }
+
+    const { ok, error, status, usuario } = await withDb((db) => {
+      const usuarioActual = db.users.find((u) => u.id === id);
+      if (!usuarioActual) return { ok: false, status: 404, error: 'Usuario no encontrado' };
+
+      if (id === req.user.id && role !== 'capturista') {
+        return { ok: false, status: 400, error: 'No puedes cambiar tu propio rol de capturista a usuario' };
+      }
+
+      const yaExisteNombre = db.users.some(
+        (u) => u.id !== id && typeof u.nombre === 'string' &&
+          u.nombre.trim().toLowerCase() === nombre.toLowerCase()
+      );
+
+      if (role === 'usuario') {
+        const empDuplicado = db.users.some(
+          (u) => u.id !== id && u.employeeId &&
+            String(u.employeeId).trim().toLowerCase() === employeeId.toLowerCase()
+        );
+        if (empDuplicado) {
+          return { ok: false, status: 409, error: 'Ya existe otro usuario con ese número de empleado' };
+        }
+      }
+
+      if (role === 'capturista') {
+        if (!usuarioActual.password && !password) {
+          return { ok: false, status: 400, error: 'La contraseña es requerida al cambiar al rol capturista' };
+        }
+      }
+
+      usuarioActual.nombre = nombre;
+      usuarioActual.uen = uen || '-';
+      usuarioActual.sitio = sitio || '-';
+      usuarioActual.role = role;
+      usuarioActual.employeeId = role === 'usuario' ? employeeId : null;
+      usuarioActual.whatsapp = whatsapp || null;
+      usuarioActual.canal = canal || null;
+
+      if (role === 'capturista') {
+        if (password) {
+          usuarioActual.password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+        }
+      } else {
+        delete usuarioActual.password;
+      }
+
+      const { password: _pw, ...sinPassword } = usuarioActual;
+      return { ok: true, usuario: { ...sinPassword, avisoNombreDuplicado: yaExisteNombre } };
+    });
+
+    if (!ok) return res.status(status || 400).json({ error });
+    res.json(usuario);
+  } catch (e) { next(e); }
+});
+
 router.delete('/:id', requireAuth, requireCapturista, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
